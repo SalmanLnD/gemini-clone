@@ -1,31 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from'react'
 import './Main.css'
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import {assets} from '../../assets/assets'
+import { Context } from '../../context/context';
 const Main = () => {
-  const genAI = new GoogleGenerativeAI(
-    "AIzaSyAPfw_79Mzt7FYU_UUSOXDbga_l3TA7RIU"
-  );
-  const [promptResponses, setpromptResponses] = useState([]);
-  const [inputValue, setInputValue] = useState("");
 
-  const getResponseForGivenPrompt= async () => {
+  const {onSent,recentPrompt,showResult,loading,resultData,setInput,input} = useContext(Context);
 
-    try{
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(inputValue);
-      const response = await result.response;
-      const text = await response.text();
-      setpromptResponses([
-        ...promptResponses,
-        text
-      ]);
-    }
-    catch(error){
-      console.log("Something Went Wrong");
-    }
-  }
+
   return (
     <div className="main">
         <div className="nav">
@@ -33,7 +16,10 @@ const Main = () => {
             <img src={assets.user_icon} />
         </div>
         <div className="main-container">
-          <div className="greet">
+
+          {!showResult ? 
+          
+          <><div className="greet">
             <p><span>Hello, Dev</span></p>
             <p>How can I help you today?</p>
           </div>
@@ -53,15 +39,35 @@ const Main = () => {
               <img src={assets.code_icon} alt=""/>
             </div>
           </div>
+          </> : 
+            <div className='result'>
+              <div className="result-title">
+                <img src={assets.user_icon} alt="" />
+                <p>{recentPrompt}</p>
+              </div>
+              <div className="result-data">
+                <img src={assets.gemini_icon} alt="" />
+                {loading? 
+                  <div className="loader">
+                    <hr />
+                    <hr />
+                    <hr />
+                  </div>:
+                <p dangerouslySetInnerHTML={{__html:resultData}}></p>
+                }
+              </div>
+            </div>
+          }
+
           
-          {promptResponses}
+          
           <div className="main-bottom">
             <div className="search-box">
-              <input onChange={(e) => setInputValue(e.target.value)} type="text" placeholder="Enter a prompt here" />
+              <input onChange={(e)=>setInput(e.target.value)} value={input} type="text" placeholder="Enter a prompt here" />
               <div>
                 <img src={assets.gallery_icon} alt="" />
                 <img src={assets.mic_icon} alt="" />
-                <img onClick={getResponseForGivenPrompt} src={assets.send_icon} alt="" />
+                <img onClick={()=>onSent()} src={assets.send_icon} alt="" />
               </div>
             </div>
             <p className="bottom-info">
