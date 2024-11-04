@@ -3,7 +3,7 @@ import { useState } from'react'
 import './Main.css'
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import {assets} from '../../assets/assets'
-import { Context } from '../../context/context';
+import { Context } from '../../context/Context';
 const Main = () => {
 
   const {onSent,recentPrompt,showResult,loading,resultData,setInput,input} = useContext(Context);
